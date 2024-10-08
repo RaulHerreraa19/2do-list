@@ -14,7 +14,7 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await axios.post('http://localhost:4000/login', body)
+      const response = await axios.post('http://localhost:3000/login', body)
       console.log(response)
     } catch (error) {
       console.error(error)

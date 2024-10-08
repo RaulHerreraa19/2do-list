@@ -54,6 +54,33 @@ static async GetTaskById({ id }) {
     }
     return response; // Devolver la instancia de Response
 }
-
+    static async AddTask({ user_id, title, description, status }) {
+        const response = new Response();
+        try {
+            const pool = await sql.connect(dbConfig);
+            const result = await pool.request()
+                .input('user_id', sql.Int, user_id)
+                .input('title', sql.NVarChar, title)
+                .input('description', sql.NVarChar, description)
+                .input('status', sql.NVarChar, status)
+                .query('INSERT INTO TASKS (user_id, title, description, status) VALUES (@user_id, @title, @description, @status)');
+            if (result.rowsAffected[0] === 0) {
+                response.type_of_response = TypeOfResponse.WARNING;
+                response.message = 'No se agregó la tarea';
+                response.data = {};
+            }
+            else{
+                
+                response.type_of_response = TypeOfResponse.SUCCESS;
+                response.message = 'Tarea agregada correctamente';
+                response.data = result.recordset;
+            }
+        } catch (error) {
+            response.message = 'Error en la conexión al servidor';
+            response.type_of_response = TypeOfResponse.ERROR;
+            response.data = {};
+        }
+        return response;
+    }
 }
 module.exports = TareasModel;
