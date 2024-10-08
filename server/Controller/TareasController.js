@@ -25,68 +25,72 @@ class TareasController{
     }
     
 
-    static async getTaskById(req, res, {id}){
-        const response = new Response()
+    static async GetTaskById(req, res){
+        let response = new Response();
+        const id = req.body.id; 
         try{
-            response = TareasModel.GetTaskById({id})
-            if(response.type_of_response === TypeOfResponse.SUCCESS){
-                res.status(200).json(response);
-            }
-            else{
-                res.status(400).json({
+            console.log("antes de la tarea")
+            response = await TareasModel.GetTaskById(id);
+            console.log("despues de la tarea");
+            
+            // Si el tipo de respuesta es éxito, devolver el resultado
+            if (response.type_of_response === TypeOfResponse.SUCCESS) {
+                return res.status(200).json(response);
+            } else {
+                // Si no se encuentra o hay algún error, devolver la respuesta con el mensaje de error
+                return res.status(404).json({
                     message: response.message,
                     type_of_response: response.type_of_response
                 });
             }
-
-        }
-        catch(e){
-            const errorResponse = {
+        } catch (error) {
+            // En caso de un error inesperado, devolver una respuesta con código 500
+            return res.status(500).json({
                 message: 'Error en la conexión al servidor',
                 type_of_response: TypeOfResponse.ERROR
-            };
-            res.status(500).json(errorResponse);
+            });
         }
     }
 
     static async addTask(req, res){
-        const response = new Response();
+        let response = new Response();
         try{
             const {user_id, title, description, status} = req.body;
-            response = await TareasModel.AddTask({user_id, title, description, status});
-            response.json(res);
+            response = await TareasModel.AddTask(user_id, title, description, status);
+            return res.status(200).json(response);
         }
         catch(error){
             response.message = 'Error en la conexión al servidor';
             response.type_of_response = TypeOfResponse.ERROR;
-            response.json(res);
+            return res.status(500).json(response);
         }
     }
 
     static async updateTask(req, res){
+        let response = new Response();
         try{
-            const {id} = req.params;
-            const {user_id, title, description, status} = req.body;
-            Response = await TareasModel.UpdateTask({id, user_id, title, description, status});
-            res.json(Response);
+            const {id, user_id, title, description, status} = req.body;
+            response = await TareasModel.UpdateTask(id, user_id, title, description, status);
+            return res.status(200).json(response);
         }
         catch(error){
-            Response.message = 'Error en la conexión al servidor';
-            Response.type_of_response = TypeOfResponse.ERROR;
-            res.json(Response);
+            response.message = 'Error en la conexión al servidor';
+            response.type_of_response = TypeOfResponse.ERROR;
+            return res.status(500).json(response);
         }
     }
 
     static async deleteTask(req, res){
+        let response = new Response();
         try{
-            const {id} = req.params;
-            Response = await TareasModel.DeleteTask({id});
-            res.json(Response);
+            const id = req.body.id;
+            response = await TareasModel.DeleteTask(id);
+            return res.status(200).json(response);
         }
         catch(error){
-            Response.message = 'Error en la conexión al servidor';
-            Response.type_of_response = TypeOfResponse.ERROR;
-            res.json(Response);
+            response.message = 'Error en la conexión al servidor';
+            response.type_of_response = TypeOfResponse.ERROR;
+            return res.status(500).json(response);
         }
     }
 }

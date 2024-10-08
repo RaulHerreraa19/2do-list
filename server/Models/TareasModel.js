@@ -14,73 +14,118 @@ class TareasModel{
 
     static async GetTasks(){
         const response = new Response(); // Crear una instancia de Response
-    try {
-        const pool = await sql.connect(dbConfig);
-        const result = await pool.request().query('SELECT * FROM TASKS');
-        // Llenar el objeto response
-        response.type_of_response = TypeOfResponse.SUCCESS;
-        response.message = 'Tareas obtenidas correctamente';
-        response.data = result.recordset;
-        
-    } catch (error) {
-        response.message = 'Error en la conexión al servidor';
-        response.type_of_response = TypeOfResponse.ERROR;
-    }
-    return response; // Devolver la instancia de Response
-}
-
-static async GetTaskById({ id }) {
-    const response = new Response();
-    try {
-        const pool = await sql.connect(dbConfig);
-        const result = await pool.request()
-            .input('id', sql.Int, id) // Asigna el valor del id al parámetro
-            .query('SELECT * FROM TASKS WHERE id = @id');
-
-        if (result.recordset.length > 0) {
-            // Llenar el objeto response si se encuentra la tarea
+        try {
+            const pool = await sql.connect(dbConfig);
+            const result = await pool.request().query('SELECT * FROM TASKS');
+            
             response.type_of_response = TypeOfResponse.SUCCESS;
-            response.message = 'Tarea obtenida correctamente';
-            response.data = result.recordset[0]; // Obtener solo la tarea
-        } else {
-            response.type_of_response = TypeOfResponse.WARNING; // Puede ser una advertencia si no se encuentra
-            response.message = 'No se encontró la tarea con ese ID';
-            response.data = {};
+            response.message = 'Tareas obtenidas correctamente';
+            response.data = result.recordset;
+            
+            } catch (error) {
+            response.message = 'Error en la conexión al servidor';
+            response.type_of_response = TypeOfResponse.ERROR;
         }
-    } catch (error) {
-        response.message = 'Error en la conexión al servidor';
-        response.type_of_response = TypeOfResponse.ERROR;
-        response.data = {}; // Asegúrate de que siempre haya un objeto de datos
-    }
-    return response; // Devolver la instancia de Response
+    return response; 
 }
-    static async AddTask({ user_id, title, description, status }) {
+
+    static async GetTaskById(id) {
         const response = new Response();
         try {
+            // Conectar a la base de datos
+            const pool = await sql.connect(dbConfig);
+            // Hacer la consulta usando el id
+            const result = await pool.request()
+                .input('id', sql.Int, id)
+                .query('SELECT * FROM TASKS WHERE id = @id');
+            result.recordset[0].id = id;
+            if (result.recordset.length > 0) {
+                return new Response(TypeOfResponse.SUCCESS, result.recordset[0], 'Tarea obtenida correctamente.');
+            } else {
+                // Si no se encuentra, devolver un error
+                return new Response(TypeOfResponse.ERROR, {}, 'Tarea no encontrada.');
+            }
+        } catch (error) {
+            console.error("Error en la base de datos:", error);
+            return new Response(TypeOfResponse.ERROR, {}, 'Error al obtener la tarea.');
+        }
+
+    }
+
+    static async AddTask(user_id, title, description, status) {
+        const response = new Response();
+        try {   
             const pool = await sql.connect(dbConfig);
             const result = await pool.request()
                 .input('user_id', sql.Int, user_id)
                 .input('title', sql.NVarChar, title)
                 .input('description', sql.NVarChar, description)
                 .input('status', sql.NVarChar, status)
-                .query('INSERT INTO TASKS (user_id, title, description, status) VALUES (@user_id, @title, @description, @status)');
+                .query(`
+                    INSERT INTO TASKS (user_id, title, description, status) 
+                    OUTPUT inserted.*
+                    VALUES (@user_id, @title, @description, @status)
+                `);
+                console.log("result", result);
             if (result.rowsAffected[0] === 0) {
                 response.type_of_response = TypeOfResponse.WARNING;
                 response.message = 'No se agregó la tarea';
                 response.data = {};
+                return new Response(TypeOfResponse.WARNING, {}, 'No se agregó la tarea.');
             }
             else{
-                
-                response.type_of_response = TypeOfResponse.SUCCESS;
-                response.message = 'Tarea agregada correctamente';
-                response.data = result.recordset;
+                console.log("agregada con exito")
+                return new Response(TypeOfResponse.SUCCESS, result.recordset[0], 'Tarea agregada correctamente.');
             }
         } catch (error) {
-            response.message = 'Error en la conexión al servidor';
-            response.type_of_response = TypeOfResponse.ERROR;
-            response.data = {};
+            return new Response(TypeOfResponse.ERROR, {}, 'Error al conectar al servidor.');
         }
-        return response;
+    }
+
+    static async DeleteTask(id) {
+        const response = new Response();
+        try {
+            const pool = await sql.connect(dbConfig);
+            const result = await pool.request()
+                .input('id', sql.Int, id)
+                .query('DELETE FROM TASKS WHERE id = @id');
+            if (result.rowsAffected[0] === 0) {
+                response.type_of_response = TypeOfResponse.WARNING;
+                response.message = 'No se eliminó la tarea';
+                response.data = {};
+                return new Response(TypeOfResponse.WARNING, {}, 'No se eliminó la tarea.');
+            }
+            return new Response(TypeOfResponse.SUCCESS, {}, 'Tarea eliminada correctamente.');
+        } catch (error) {
+            return new Response(TypeOfResponse.ERROR, {}, 'Error al conectar al servidor.');
+        }
+    }
+
+    static async UpdateTask(id, title, description, status) {
+        const response = new Response();
+        try {
+            const pool = await sql.connect(dbConfig);
+            const result = await pool.request()
+                .input('id', sql.Int, id)
+                .input('title', sql.NVarChar, title)
+                .input('description', sql.NVarChar, description)
+                .input('status', sql.NVarChar, status)
+                .query(`
+                    UPDATE TASKS
+                    SET title = @title, description = @description, status = @status
+                    WHERE id = @id
+                    OUTPUT inserted.*
+                `);
+            if (result.rowsAffected[0] === 0) {
+                response.type_of_response = TypeOfResponse.WARNING;
+                response.message = 'No se actualizó la tarea';
+                response.data = {};
+                return new Response(TypeOfResponse.WARNING, {}, 'No se actualizó la tarea.');
+            }
+            return new Response(TypeOfResponse.SUCCESS, result.recordset[0], 'Tarea actualizada correctamente.');
+        } catch (error) {
+            return new Response(TypeOfResponse.ERROR, {}, 'Error al conectar al servidor.');
+        }
     }
 }
 module.exports = TareasModel;
