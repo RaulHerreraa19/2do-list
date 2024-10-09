@@ -5,7 +5,15 @@ const TareasModel = require('../Models/TareasModel')
 class TareasController{
     static async getAllTasks(req, res) {
         try {
-            const response = await TareasModel.GetTasks(); // Usar una instancia de Response
+            const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+            if (!token) {
+                return res.status(403).json({ message: 'Token no proporcionado', type_of_response: TypeOfResponse.ERROR });
+            }
+
+            // Pasar el token al modelo
+            console.log("enrta model")
+            const response = await TareasModel.GetTasks(token);
+            console.log("sale model")
             
             if (response.type_of_response === TypeOfResponse.SUCCESS) {
                 res.status(200).json(response);  // Enviar respuesta con el código HTTP adecuado
@@ -27,11 +35,16 @@ class TareasController{
 
     static async GetTaskById(req, res){
         let response = new Response();
-        const id = req.body.id; 
         try{
+        console.log("entra controller")
+        const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+        if (!token) {
+            return res.status(403).json({ message: 'Token no proporcionado', type_of_response: TypeOfResponse.ERROR });
+        }
+        const id = req.body.id; 
+        
             console.log("antes de la tarea")
-            response = await TareasModel.GetTaskById(id);
-            console.log("despues de la tarea");
+            response = await TareasModel.GetTaskById(id, token);
             
             // Si el tipo de respuesta es éxito, devolver el resultado
             if (response.type_of_response === TypeOfResponse.SUCCESS) {
@@ -55,8 +68,12 @@ class TareasController{
     static async addTask(req, res){
         let response = new Response();
         try{
-            const {user_id, title, description, status} = req.body;
-            response = await TareasModel.AddTask(user_id, title, description, status);
+            const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+            if (!token) {
+                return res.status(403).json({ message: 'Token no proporcionado', type_of_response: TypeOfResponse.ERROR });
+            }
+            const {title, description, status} = req.body;
+            response = await TareasModel.AddTask(token, title, description, status);
             return res.status(200).json(response);
         }
         catch(error){
@@ -69,9 +86,13 @@ class TareasController{
     static async updateTask(req, res){
         let response = new Response();
         try{
+            const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+            if (!token) {
+                return res.status(403).json({ message: 'Token no proporcionado', type_of_response: TypeOfResponse.ERROR });
+            }
             const {id, title, description, status} = req.body;
             console.log("antes del update")
-            response = await TareasModel.UpdateTask(id, title, description, status);
+            response = await TareasModel.UpdateTask(token, id, title, description, status);
             console.log("response", response)
             return res.status(200).json(response);
         }
@@ -85,8 +106,13 @@ class TareasController{
     static async deleteTask(req, res){
         let response = new Response();
         try{
-            const id = req.body.id;
-            response = await TareasModel.DeleteTask(id);
+            console.log("entra gettasks")
+            const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+            const id = req.body.id; 
+            if (!token) {
+                return res.status(403).json({ message: 'Token no proporcionado', type_of_response: TypeOfResponse.ERROR });
+            }
+            response = await TareasModel.DeleteTask(token, id);
             return res.status(200).json(response);
         }
         catch(error){

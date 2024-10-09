@@ -1,19 +1,32 @@
+// src/App.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Register from './pages/Register';
+import Index from './pages/Index';
+import PrivateRoute from './routes/PrivateRoute';
+import Logout from './pages/Logout';
 
-function App() {
+const App = () => {
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<h2>Página de Inicio</h2>} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </Layout>
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/logout" element={<Logout />} />
+
+      {/* Ruta privada utilizando PrivateRoute */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        }
+      />
+    </Routes>
   );
-}
+};
 
 export default App;

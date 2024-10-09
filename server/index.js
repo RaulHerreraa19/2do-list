@@ -3,7 +3,9 @@ const session = require('express-session');
 const userRoutes = require('./routes/Routes');
 const cors = require('cors'); 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173'  // Cambia esto por la URL de tu frontend
+}));
 app.use(express.json());
 
 app.set('view engine', 'ejs'); // Configurar EJS como motor de vistas
@@ -17,6 +19,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
 }));
+
 
 // Rutas
 app.use('/', userRoutes);  // Usar las rutas de userRoutes
