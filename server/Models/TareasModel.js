@@ -102,27 +102,29 @@ class TareasModel{
     }
 
     static async UpdateTask(id, title, description, status) {
-        const response = new Response();
+        let response = new Response();
         try {
             const pool = await sql.connect(dbConfig);
-            const result = await pool.request()
-                .input('id', sql.Int, id)
-                .input('title', sql.NVarChar, title)
-                .input('description', sql.NVarChar, description)
-                .input('status', sql.NVarChar, status)
-                .query(`
-                    UPDATE TASKS
-                    SET title = @title, description = @description, status = @status
-                    WHERE id = @id
-                    OUTPUT inserted.*
-                `);
-            if (result.rowsAffected[0] === 0) {
-                response.type_of_response = TypeOfResponse.WARNING;
-                response.message = 'No se actualizó la tarea';
-                response.data = {};
-                return new Response(TypeOfResponse.WARNING, {}, 'No se actualizó la tarea.');
+            const updateResponse = await pool.request()
+            .input('id', sql.Int, id)
+            .input('title', sql.NVarChar(255), title)
+            .input('description', sql.NVarChar(sql.MAX), description)
+            .input('status', sql.NVarChar(50), status)
+            .query(`
+                UPDATE TASKS
+                SET title = @title, description = @description, status = @status
+                WHERE id = @id 
+                OUTPUT inserted.*
+                SELECT * FROM TASKS WHERE id = @id;
+            `);
+    
+        console.log("Updated Task:", updateResponse.recordset); 
+                console.log(response)
+            if (response.rowsAffected[0] !== 0) {
+                return new Response(TypeOfResponse.SUCCESS, result.recordset[0], 'Tarea actualizada correctamente.');
+            } else {
+                return new Response(TypeOfResponse.ERROR, {}, 'Error al actualizar la tarea.');
             }
-            return new Response(TypeOfResponse.SUCCESS, result.recordset[0], 'Tarea actualizada correctamente.');
         } catch (error) {
             return new Response(TypeOfResponse.ERROR, {}, 'Error al conectar al servidor.');
         }

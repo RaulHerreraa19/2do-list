@@ -69,8 +69,10 @@ class TareasController{
     static async updateTask(req, res){
         let response = new Response();
         try{
-            const {id, user_id, title, description, status} = req.body;
-            response = await TareasModel.UpdateTask(id, user_id, title, description, status);
+            const {id, title, description, status} = req.body;
+            console.log("antes del update")
+            response = await TareasModel.UpdateTask(id, title, description, status);
+            console.log("response", response)
             return res.status(200).json(response);
         }
         catch(error){
