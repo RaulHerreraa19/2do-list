@@ -104,7 +104,11 @@ class TareasModel{
     static async UpdateTask(id, title, description, status) {
         let response = new Response();
         try {
+            console.log("id", id, "title", title, "description", description, "status", status)
+            let token = sessionStorage.getItem('token')
+            console.log("token", token) 
             const pool = await sql.connect(dbConfig);
+            console.log("pool", pool)
             const updateResponse = await pool.request()
             .input('id', sql.Int, id)
             .input('title', sql.NVarChar(255), title)
