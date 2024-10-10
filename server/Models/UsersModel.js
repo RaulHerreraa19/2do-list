@@ -37,6 +37,7 @@ class UserModel{
         const response = new Response();
         try{            
             const pool = await sql.connect(dbConfig);
+            console.log("pool", pool)
             const result = await pool.request()
         .input('username', sql.VarChar, username)
         .input('password', sql.VarChar, password)
@@ -45,7 +46,7 @@ class UserModel{
         .input('created_date', sql.DateTime, created_date)
         .query(`INSERT INTO USERS (USERNAME, PASSWORD, EMAIL, CELLPHONE, CREATED_DATE)
                 OUTPUT INSERTED.id
-                VALUES (@username, @password, @email, @cellphone, @created_date)`);
+                VALUES (@username, @password, @email, @cellphone, @created_date)`);                
                 if (result.recordset.length > 0) {
                     const insertedId = result.recordset[0].id;
                     // Devolver los datos del usuario insertado

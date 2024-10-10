@@ -14,7 +14,6 @@ class TareasController{
             console.log("enrta model")
             const response = await TareasModel.GetTasks(token);
             console.log("sale model")
-            
             if (response.type_of_response === TypeOfResponse.SUCCESS) {
                 res.status(200).json(response);  // Enviar respuesta con el código HTTP adecuado
             } else {

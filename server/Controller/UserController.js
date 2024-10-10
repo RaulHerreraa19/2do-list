@@ -71,7 +71,7 @@ static async CreateUser(req, res) {
             cellphone: cellphone,
             created_date: created_date || new Date().toISOString().split('T')[0] // Usa la fecha actual si no se proporciona
         });
-        if (result) {
+        if (result.type_of_response === TypeOfResponse.SUCCESS) {
             console.log("result controller", result);
             response.type_of_response = TypeOfResponse.SUCCESS;
             response.message = 'Usuario creado correctamente';

@@ -14,6 +14,7 @@ class TareasModel{
         this.status = status;
     }
 
+<<<<<<< HEAD
     static async GetTasks(token){
         const response = new Response(); // Crear una instancia de Response
         try {
@@ -24,8 +25,7 @@ class TareasModel{
             const pool = await sql.connect(dbConfig);
             const result = await pool.request()
             .input('user_id', sql.Int, user_id)
-            .query('SELECT * FROM TASKS WHERE user_id = @user_id');
-            
+            .query('SELECT * FROM TASKS WHERE user_id = @user_id');            
             response.type_of_response = TypeOfResponse.SUCCESS;
             response.message = 'Tareas obtenidas correctamente';
             response.data = result.recordset;
