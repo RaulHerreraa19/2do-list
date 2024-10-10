@@ -14,7 +14,6 @@ class TareasModel{
         this.status = status;
     }
 
-<<<<<<< HEAD
     static async GetTasks(token){
         const response = new Response(); // Crear una instancia de Response
         try {
