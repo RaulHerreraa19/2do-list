@@ -64,37 +64,53 @@ class TareasModel{
 
     }
 
-    static async AddTask(token, title, description, status) {
+    static async AddTask(token, title, description, status, created_date, end_date) {
         const response = new Response();
         try {   
+            // Asigna la fecha actual si created_date está vacío
+            let date1 = created_date ? new Date(created_date) : new Date();
+            
+            // Si end_date está vacío, asigna 10 días desde created_date
+            let date2 = end_date ? new Date(end_date) : new Date(date1);
+            date2.setDate(date2.getDate() + 10); // Sumar 10 días a end_date
+    
+            console.log(date1, date2);
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const user_id = decoded.id;
             const pool = await sql.connect(dbConfig);
+            
+            console.log("antes de la tarea");
+            
             const result = await pool.request()
                 .input('user_id', sql.Int, user_id)
                 .input('title', sql.NVarChar, title)
                 .input('description', sql.NVarChar, description)
                 .input('status', sql.NVarChar, status)
+                .input('created_date', sql.DateTime, date1)
+                .input('end_date', sql.DateTime, date2)
                 .query(`
-                    INSERT INTO TASKS (user_id, title, description, status) 
+                    INSERT INTO TASKS (user_id, title, description, status, created_date, end_date) 
                     OUTPUT inserted.*
-                    VALUES (@user_id, @title, @description, @status)
+                    VALUES (@user_id, @title, @description, @status, @created_date, @end_date)
                 `);
-                console.log("result", result);
+            
+            console.log("result", result);
+            
             if (result.rowsAffected[0] === 0) {
                 response.type_of_response = TypeOfResponse.WARNING;
                 response.message = 'No se agregó la tarea';
                 response.data = {};
                 return new Response(TypeOfResponse.WARNING, {}, 'No se agregó la tarea.');
-            }
-            else{
-                console.log("agregada con exito")
+            } else {
+                console.log("agregada con éxito");
                 return new Response(TypeOfResponse.SUCCESS, result.recordset[0], 'Tarea agregada correctamente.');
             }
         } catch (error) {
+            console.error(error); // Añadir el error a la consola para depuración
             return new Response(TypeOfResponse.ERROR, {}, 'Error al conectar al servidor.');
         }
     }
+    
 
     static async DeleteTask(token, id) {
         try {                
@@ -114,8 +130,9 @@ class TareasModel{
         }
     }
 
-    static async UpdateTask(token, id, title, description, status) {
+    static async UpdateTask(token, id, title, description, status, end_date) {
         try {
+            console.log("entra update")
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const user_id = decoded.id;
             const pool = await sql.connect(dbConfig);
@@ -125,13 +142,15 @@ class TareasModel{
                 .input('title', sql.NVarChar, title)
                 .input('description', sql.NVarChar, description)
                 .input('status', sql.NVarChar, status)
+                .input('end_date', sql.DateTime, end_date)
                 .query(`
-                    UPDATE TASKS SET title = @title, description = @description, status = @status
+                    UPDATE TASKS SET title = @title, description = @description, status = @status, end_date = @end_date
+                    OUTPUT inserted.*
                     WHERE id = @id AND user_id = @user_id
                 `);
                 if (result.rowsAffected[0] !== 0) {
                 console.log("actualizada con exito")
-                return new Response(TypeOfResponse.SUCCESS, {}, 'Tarea actualizada correctamente.');
+                return new Response(TypeOfResponse.SUCCESS, result.recordset[0], 'Tarea actualizada correctamente.');
                 }
         } catch (error) {
             return new Response(TypeOfResponse.ERROR, {}, 'Error al conectar al servidor.');

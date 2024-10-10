@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Index from './pages/Index';
 import PrivateRoute from './routes/PrivateRoute';
 import Logout from './pages/Logout';
+import Profile from './pages/Profile';
 
 const App = () => {
   return (
@@ -22,6 +23,14 @@ const App = () => {
         element={
           <PrivateRoute>
             <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path='/Profile'
+        element={
+          <PrivateRoute>
+            <Profile />
           </PrivateRoute>
         }
       />

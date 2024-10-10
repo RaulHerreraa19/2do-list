@@ -22,6 +22,7 @@ function Login() {
             let username = response.data.data.username;
 
             // Almacenar el token y el nombre de usuario
+
             localStorage.setItem('token', token);
             localStorage.setItem('username', username);
 
@@ -35,6 +36,10 @@ function Login() {
             setError('Usuario o contraseña incorrectos'); // Manejo de errores
         }
     };
+    useState(() => {
+        localStorage.clear();
+    }
+        , []);
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">

@@ -1,6 +1,7 @@
 const { Response, TypeOfResponse } = require('../Common/Response');
 const UserModel = require('../Models/UsersModel');
 const bcrypt = require('bcrypt');
+
 saltRounds = 10;
 
 
@@ -92,6 +93,39 @@ static async CreateUser(req, res) {
     return res;
 }
 
+static async GetUserById(req, res)
+    {
+        let response = new Response();
+        let result = null;
+        try{
+            const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+                if (!token) {
+                    return res.status(403).json({ message: 'Token no proporcionado', type_of_response: TypeOfResponse.ERROR });
+            }
+            result = await UserModel.GetUserById(token)
+            console.log("sale metodo")
+            console.log("result", result)
+            if (result.type_of_response === TypeOfResponse.SUCCESS) {
+                response.type_of_response = TypeOfResponse.SUCCESS;
+                response.message = 'Usuario obtenido correctamente';
+                response.data = result.data;
+                res.status(200).json(response);
+            } else {
+                // Si no se encuentra o hay algún error, devolver la respuesta con el mensaje de error
+                res.status(404).json({
+                    message: response.message,
+                    type_of_response: response.type_of_response
+                });
+            }
+        } catch (error) {
+            // En caso de un error inesperado, devolver una respuesta con código 500
+            res.status(500).json({
+                message: 'Error en la conexión al servidor',
+                type_of_response: TypeOfResponse.ERROR
+            });
+        return res;
+        }
+    }
 }
 
 

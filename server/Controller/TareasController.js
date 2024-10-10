@@ -1,5 +1,5 @@
 const {Response, TypeOfResponse} = require('../Common/Response');   
-const TareasModel = require('../Models/TareasModel')
+const TareasModel = require('../Models/TareasModel');
 
 
 class TareasController{
@@ -67,12 +67,15 @@ class TareasController{
     static async addTask(req, res){
         let response = new Response();
         try{
+            console.log("entra addtask")
             const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
             if (!token) {
                 return res.status(403).json({ message: 'Token no proporcionado', type_of_response: TypeOfResponse.ERROR });
             }
-            const {title, description, status} = req.body;
-            response = await TareasModel.AddTask(token, title, description, status);
+            const {title, description, status, created_date ,end_date} = req.body;
+            console.log("antes de la tarea")
+            response = await TareasModel.AddTask(token, title, description, status, created_date, end_date);
+            
             return res.status(200).json(response);
         }
         catch(error){
@@ -89,9 +92,9 @@ class TareasController{
             if (!token) {
                 return res.status(403).json({ message: 'Token no proporcionado', type_of_response: TypeOfResponse.ERROR });
             }
-            const {id, title, description, status} = req.body;
+            const {id, title, description, status, end_date} = req.body;
             console.log("antes del update")
-            response = await TareasModel.UpdateTask(token, id, title, description, status);
+            response = await TareasModel.UpdateTask(token, id, title, description, status, end_date);
             console.log("response", response)
             return res.status(200).json(response);
         }

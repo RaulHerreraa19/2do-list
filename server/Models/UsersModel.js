@@ -2,6 +2,8 @@ const sql = require('mssql');
 const dbConfig = require('../Config/dbConfig');
 const {Response, TypeOfResponse} = require('../Common/Response');
 const { query } = require('express');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 
 class UserModel{
@@ -71,6 +73,29 @@ class UserModel{
         }
         return response;
     }
+
+    static async GetUserById(token){
+        const response = new Response();
+        try{
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user_id = decoded.id;
+        console.log(decoded);
+        console.log("pool")
+        const pool = await sql.connect(dbConfig);
+            // Hacer la consulta usando el id
+        const result = await pool.request()
+            .input('id', sql.Int, user_id)
+            .query('SELECT * FROM USERS WHERE id = @id');
+            response.type_of_response = TypeOfResponse.SUCCESS;
+            response.message = 'Usuario obtenido correctamente';
+            response.data = result.recordset[0];
+    } catch (error) {
+        console.error(error); // Añadir el error a la consola para depuración
+        response.type_of_response = TypeOfResponse.ERROR;
+        response.message = 'Error al conectar al servidor';
+    }
+    return response;
+}   
 }
 
 module.exports = UserModel;
