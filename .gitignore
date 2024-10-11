@@ -1,0 +1,60 @@
+# Node.js
+/node_modules
+/npm-debug.log
+/yarn-error.log
+/package-lock.json
+/yarn.lock
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# React build output
+/build
+
+# dotenv environment variables file
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor/IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Operating System files
+Thumbs.db
+.DS_Store
+
+# Dependency directories
+/node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build output
+/dist/
+/build/
+
+# Coverage directory used by testing tools
+/coverage/
+
+# Cache files
+/.cache/
+/public/static
+
+# Lint/formatting files
+.eslintcache
+.prettierignore
+
+# Docker files
+docker-compose.override.yml
+.dockerignore
+
+# Miscellaneous
+*.pem
+*.p12
