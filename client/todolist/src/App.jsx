@@ -1,42 +1,41 @@
-import { useState } from 'react'
-import axios from 'axios';
-import './App.css'
+// src/App.jsx
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Register from './pages/Register';
+import Index from './pages/Index';
+import PrivateRoute from './routes/PrivateRoute';
+import Logout from './pages/Logout';
+import Profile from './pages/Profile';
 
-function App() {
-  const [body, setBody] = useState({ username, password })
-
-  const handleChange = (e) => {
-    setBody({ ...body, [e.target.name]: e.target.value })
-  }
-
-  //login with axios
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    try {
-      const response = await axios.post('http://localhost:4000/login', body)
-      console.log(response)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-
+const App = () => {
   return (
-    <>
-      <form className='form-control'>
-        <div>
-          <label>Usuario:</label>
-          <input value={username} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Contraseña:</label>
-          <input value={password} onChange={handleChange} />
-        </div>
-      </form>
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/logout" element={<Logout />} />
 
-      <button className='btn btn-primary' onClick={handleSubmit}>Iniciar sesión</button>
-    </>
-  )
-}
+      {/* Ruta privada utilizando PrivateRoute */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path='/Profile'
+        element={
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
+        }
+      />
+    </Routes>
+  );
+};
 
-export default App
+export default App;
