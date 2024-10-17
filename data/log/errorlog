@@ -194,3 +194,9 @@
 2024-10-17 03:42:08.94 Logon       Login failed for user 'SA'. Reason: Password did not match that for the login provided. [CLIENT: 192.168.65.1]
 2024-10-17 03:44:58.91 Logon       Error: 18456, Severity: 14, State: 8.
 2024-10-17 03:44:58.91 Logon       Login failed for user 'SA'. Reason: Password did not match that for the login provided. [CLIENT: 192.168.65.1]
+2024-10-17 03:47:48.93 Logon       Error: 18456, Severity: 14, State: 8.
+2024-10-17 03:47:48.93 Logon       Login failed for user 'SA'. Reason: Password did not match that for the login provided. [CLIENT: 192.168.65.1]
+2024-10-17 03:50:38.91 Logon       Error: 18456, Severity: 14, State: 8.
+2024-10-17 03:50:38.91 Logon       Login failed for user 'SA'. Reason: Password did not match that for the login provided. [CLIENT: 192.168.65.1]
+2024-10-17 03:53:28.79 Logon       Error: 18456, Severity: 14, State: 8.
+2024-10-17 03:53:28.79 Logon       Login failed for user 'SA'. Reason: Password did not match that for the login provided. [CLIENT: 192.168.65.1]
