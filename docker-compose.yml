@@ -1,14 +1,51 @@
-version: '3'
-
 services:
+
+  frontend:
+    container_name: Frontend
+    build:
+      context: ./client/todolist
+      dockerfile: Dockerfile
+    ports:
+      - '5173:5173' # Asegúrate de que este puerto sea el correcto para tu aplicación
+    networks:
+      - app_network
+    depends_on:
+      - server
+
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: base_de_datos
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=SuperSecurePass123!
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./data:/var/opt/mssql
+    networks:
+      - app_network
+
   server:
+    container_name: Backend
     build:
       context: ./server
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - '3000:3000'
+    networks:
+      - app_network
+    depends_on:
+      - db
+    volumes:
+      - ./server:/app
 
-  client:
-    build:
-      context: ./client
-    ports:
-      - "80:80"
+volumes:
+  db_data:
+    # Volumen para la persistencia de datos de SQL Server
+
+networks:
+  app_network:
+    driver: bridge
+  default:
+    external: true

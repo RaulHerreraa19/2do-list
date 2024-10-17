@@ -37,9 +37,10 @@ class UserModel{
     static async CreateUser({username, password, email, cellphone, created_date}){
         console.log("entra create")
         const response = new Response();
-        try{            
+        try{        
+            console.log("entra create method try")
             const pool = await sql.connect(dbConfig);
-            console.log("pool", pool)
+            console.log("pool: ", pool)
             const result = await pool.request()
         .input('username', sql.VarChar, username)
         .input('password', sql.VarChar, password)

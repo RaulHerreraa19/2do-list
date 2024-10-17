@@ -1,6 +1,6 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 saltRounds = 10;
 const { Response, TypeOfResponse } = require('../Common/Response');  // Tu clase de respuesta
 var session = require('express-session')

@@ -1,6 +1,6 @@
 const { Response, TypeOfResponse } = require('../Common/Response');
 const UserModel = require('../Models/UsersModel');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 saltRounds = 10;
 
@@ -47,7 +47,6 @@ static async CreateUser(req, res) {
     const response = new Response();
     const { username, password, email, cellphone, created_date } = req.body; // Asegúrate de que req.body esté definido
     let result = null;
-
     try {
         console.log("inicia");
         console.log("username:", username, "password:", password, "email:", email, "cellphone:", cellphone);
@@ -63,7 +62,6 @@ static async CreateUser(req, res) {
 
         // Encriptar la contraseña con async/await
         const hash = await bcrypt.hash(password, saltRounds);
-
         // Crear el usuario en la base de datos con la contraseña encriptada
         result = await UserModel.CreateUser({
             username: username,
