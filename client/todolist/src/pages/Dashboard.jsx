@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { Modal, Button, Form } from 'react-bootstrap';
 import ProfileDropdown from '../pages/DropDawnProfile';
 import profileimage from '../assets/perfil.jpg'
+import OpenSwal from '../components/utils/SweetAlert';
 
 // Formato de fecha
 const formatDate = (date) => {
@@ -47,8 +48,11 @@ const Dashboard = () => {
   const userImage = profileimage;
 
   const token = localStorage.getItem('token');
+  const token2 = sessionStorage.getItem('token');
   const user = localStorage.getItem('username');
+  const tasks = localStorage.setItem('tasks', data);
 
+  isAuthenticated ? console.log('Usuario autenticado') : console.log('Usuario no autenticado');
   // Obtener tareas
   const GetTasks = () => {
     if (!token) {
@@ -64,6 +68,9 @@ const Dashboard = () => {
       .then((response) => {
         console.log(response.data.data);
         setData(response.data.data);
+        console.log("dataaaaaa")
+
+        OpenSwal("Tareas Cargadas", "Tareas cargadas correctamente", "success", null, "Aceptar", null, null, null, null, null, null);
       })
       .catch((error) => {
         console.error("Error fetching tasks:", error.response?.data || error.message);
@@ -72,6 +79,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    console.log(token)
     const username = localStorage.getItem('username');
 
     // Verifica si el token existe

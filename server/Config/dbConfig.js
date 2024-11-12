@@ -21,4 +21,3 @@ console.log('DB_DATABASE:', process.env.DB_DATABASE);
 
 module.exports = config;
 
-

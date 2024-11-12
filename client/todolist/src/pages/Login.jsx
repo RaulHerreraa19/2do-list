@@ -2,7 +2,10 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import OpenSwal from '../components/utils/SweetAlert';
+
 
 function Login() {
     const { login } = useContext(AuthContext); // Agregar contexto de autenticación
@@ -18,28 +21,24 @@ function Login() {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:3000/login', body);
-            let token = response.data.data.token;
+            console.log("token", response.data.data.token);
             let username = response.data.data.username;
+            let token = response.data.data.token;
 
-            // Almacenar el token y el nombre de usuario
-
-            localStorage.setItem('token', token);
             localStorage.setItem('username', username);
-
-            // Actualizar el estado de autenticación
-            login(token, username); // Suponiendo que login actualiza el estado
-
+            sessionStorage.setItem('username', username);
+            sessionStorage.setItem('token', token);
+            localStorage.setItem("token", token);
+            // Actualizar el estado de autenticación con mi authContext personalizado y redirigir al dashboard, mandando un authContexxt true
+            login(username);
             // Redirigir al dashboard
             navigate('/dashboard');
+
         } catch (error) {
             console.error(error);
             setError('Usuario o contraseña incorrectos'); // Manejo de errores
         }
     };
-    useState(() => {
-        localStorage.clear();
-    }
-        , []);
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
@@ -70,7 +69,7 @@ function Login() {
                         />
                     </div>
                     <div className="d-flex justify-content-between">
-                        <button type="submit" className="btn btn-primary">
+                        <button className="btn btn-primary">
                             Iniciar sesión
                         </button>
                         <button
